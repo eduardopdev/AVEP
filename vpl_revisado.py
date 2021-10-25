@@ -21,11 +21,15 @@ def VPLAE(FCt, n, i):
     return vplae
 
 #PAYBACK
-def payback() # retorna o t necessesário para
-              #que o investimento passe a gerar
-              #retorno do capital investido.
-
-Qual valor de t para VPL=0
+def payback(FCt, n, i): # retorna o t necessesário para
+    vpl = 0 #que o investimento passe a gerar
+    for t in range(1, n+1):          #retorno do capital investido.
+        vpl = vpl + FCt/(1+i)**t
+        if vpl == 0:
+            return t
+        else:
+            continue
+#Qual valor de t para VPL=0
 
 # CRIAR LISTA (VIB) para cada material e espessura
 CRIAR 4 LISTAS - Fct, VPL, VPLAE, PAYBACK
