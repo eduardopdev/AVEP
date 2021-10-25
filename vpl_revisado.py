@@ -25,7 +25,7 @@ def payback(FCt, n, i): # retorna o t necessesário para
     vpl = 0 #que o investimento passe a gerar
     for t in range(1, n+1):          #retorno do capital investido.
         vpl = vpl + FCt/(1+i)**t
-        if vpl == 0:
+        if vpl >= 0:
             return t
         else:
             continue
