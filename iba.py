@@ -2,6 +2,7 @@
 
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy import optimize
 import ctc
 import rt
@@ -19,7 +20,7 @@ import cst
 # =============================================================================
 
 #Custo de energia perdida trazido para valor atual em $/(ano.m^2).
-def CE_VA(q, N, CEE, eta, COP):#, n, i, delta):
+def CE(q, N, CEE, eta, COP):#, n, i, delta):
 
     CE = (q*N*CEE)/(1000*eta*COP)
 
@@ -32,7 +33,7 @@ def CE_VA(q, N, CEE, eta, COP):#, n, i, delta):
     return (CE)
 
 #Custo de manutenção do isolamento em $/(ano.m^2).
-def CM_VA(CI, tm):#, n, i):
+def CM(CI, tm):#, n, i):
 
     CM = tm*CI
 
@@ -91,8 +92,10 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     #Lista de espessuras para o DataFrame.
     #CONFIRMAR O VALOR DA ESPESSURA
     #DO ISOLANTE A SER SUBSTITUIDO
-    LE_Disp_DF = [0] + LE_Disp2*ni2 #+ LE_Disp3*ni3
-    LE_Disp_Imp_DF = [0] + LE_Disp_Imp2*ni2 #+ LE_Disp_Imp3*ni3
+    #LE_Disp_DF = [0] + LE_Disp2*ni2 #+ LE_Disp3*ni3
+    #LE_Disp_Imp_DF = [0] + LE_Disp_Imp2*ni2 #+ LE_Disp_Imp3*ni3
+    LE_Disp_DF = LE_Disp2*ni2 #+ LE_Disp3*ni3
+    LE_Disp_Imp_DF = LE_Disp_Imp2*ni2 #+ LE_Disp_Imp3*ni3
 
     #Lista de nomes para o DataFrame.
     LNM = ['Isolamento Atual']
@@ -128,17 +131,16 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
             for E in LE2:
                 De = Di + 2*E
                 #err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd, R_rev)
-                #Te = optimize.brentq(err, Ti, Ta)
-                LR = LR + [ (rt.rt_conv_cili(di,h_fld)+ \
-                            rt.rt_cond_cili(di,de,lmd_tube)+ \
-                            rt.rt_cond_cili(Di,De,flmd)+ \
-                            R_rev+ \
-                            ((((rt.rt_conv_cili(De,ctc.hc_m_ch(U,De,Te,Ta))))+((rt.rt_crad_cili(De,ctc.hr(eps,Te,Ta))))))]
+                Te = wtr.TDP(Ta, RH)
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+\
+                rt.rt_cond_cili(di,de,lmd_tube)+\
+                rt.rt_cond_cili(Di,De,flmd)+\
+                R_rev+((((rt.rt_conv_cili(De,ctc.hc_m_ch(U,De,Te,Ta))))+((rt.rt_crad_cili(De,ctc.hr(eps,Te,Ta)))))))]
                 qdp = (Ta - Ti) / LR[-1]
                 #qdp = (ctc.qc_m_ch(U, De, Te, Ta) + ctc.qr(eps, Te, Ta))*(np.pi*(De))
 
                 TDi = Ti - qdp*(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube))
-                Te = TDi + qdp * (rt.rt_cond_cili(Di, De, flmd) + R_rev)
+                #Te = TDi + qdp * (rt.rt_cond_cili(Di, De, flmd) + R_rev)
                 Lslmd = Lslmd + [flmd]
                 Lq = Lq + [qdp]
                 LTe = LTe + [Te]
@@ -182,33 +184,35 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
 
     #Lista de q através de LMTD e R.
     LVT = list(map(lambda x: Ti - (Ta - (Ta - Ti)*np.exp(-1/(m*c*x))),LR))
+
     LTSK = list(map(lambda x: Ti - x, LVT))
     LLMTD = [((x - Ta) - (Ti - Ta))/(np.log((x - Ta)/(Ti - Ta))) for x in LTSK]
     ZTR = zip(LLMTD, LR)
     #Lq está em W/m, LR deve ser multiplicado por z.
-    Lq = [x[0]/(x[1]*z) for x in ZTR]
+    Lq = [x[0]/(x[1]) for x in ZTR]
+    #Lq = [x[0]/(x[1]*z) for x in ZTR] Verificar se o z deve ser removido.
 
     #Análise econômica.
     #Custo de energia perdida atualizada.
-    LCEVA = [CE_VA(abs(q), N, CEE, eta, COP, n, i, delta) for q in Lq]
+    LCE = [CE(abs(q), N, CEE, eta, COP) for q in Lq]
     #Custo de investimento.
-    #Isolantes flexíveis.
-    LFCI2 = [cst.cst_null,
-             cst.cst_C534]
-    #Isolantes rígidos.
-    LFCI3 = [cst.cst_C552,
-             cst.cst_C591]
-    LCI = [np.nan]
+
+    #O investimento é o custo do material + custo mão de mao_de_obra
+    #A lista LFCI2 vai pegar os dados do módulo (biblioteca) custos
+    # custo_do_material * área_da_tubulação + custo da mão de obra *comprimento da tubulação
+    LFCI2 = [] #Alterar
+
+    LCI = []
     for ci in LFCI2:
         for E in LE2:
             LCI = LCI + [ci(Di, E)]
-    for ci in LFCI3:
+    '''for ci in LFCI3:
         for E in LE3:
-            LCI = LCI + [ci(Di, E)]
+            LCI = LCI + [ci(Di, E)]'''
     #Custo de manutenção.
-    LCMVA = [CM_VA(CI, tm, n, i) for CI in LCI]
+    LCM = [CM(CI, tm) for CI in LCI]
     #Custo total.
-    LCT = [x + y + z for (x,y,z) in zip(LCEVA, LCI, LCMVA)]
+    LCT = [x + y + z for (x,y,z) in zip(LCE, LCI, LCM)]
 
     #Exlusão de casos reprovados.
 
