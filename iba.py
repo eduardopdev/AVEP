@@ -13,7 +13,7 @@ import ASTMC552
 import ASTMC591
 #import ASTMC1728a
 import aerogel_cryogel
-import cst
+import cst, custos
 
 # =============================================================================
 # Custos.
@@ -200,9 +200,11 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     #O investimento é o custo do material + custo mão de mao_de_obra
     #A lista LFCI2 vai pegar os dados do módulo (biblioteca) custos
     # custo_do_material * área_da_tubulação + custo da mão de obra *comprimento da tubulação
-    LFCI2 = [] #Alterar
+    LFCI2 = []
+    LFCI2 += [custos.aerogel_custos[esp] for esp in LE_Disp_Imp2] #Alterar
+    LFCI2 += LFCI2 + [custos.espuma_custos[esp] for esp in LE_Disp_Imp2]
 
-    LCI = []
+    LCI = [np.nan]
     for ci in LFCI2:
         for E in LE2:
             LCI = LCI + [ci(Di, E)]
