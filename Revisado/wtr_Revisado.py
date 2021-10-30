@@ -100,12 +100,12 @@ def Pr(T):
     return (a/b)
 
 #Coeficiente de transferência de calor. Entrada em kg/s, m, K e m, saída em W/(m^2.K).
-def hc(m, D, T):
+def hc(m, D, T, e):
     
     R = Re(m, D, T)
     P = Pr(T)
 
-    NuD = 0.023*(R**0.8)*(P**4)      ############################## ALTERADO #######################################
+    NuD = 0.023*(R**0,8)*(P**4)      ############################## ALTERADO #######################################
     
     k = lamed(T)
     

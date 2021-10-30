@@ -9,10 +9,20 @@ def VPL(FCt, n, i):
     for t in range(1, n+1):
         #if t == 1:
         #   vpl = vpl + x (x < 0)
-         vpl = vpl + FCt/(1+i)**t
+        vpl = vpl + FCt/(1+i)**t
     return vpl
 
-FCt = LCT - LCR  #LCT é o custo total do isolamento bom e LCR custo total com isolamento ruim/atual
+def VPL_lista(custo_inicial_aerogel, FCt, n, i):
+    vpl = custo_inicial_aerogel
+    vpl_lista = [vpl]
+    for t in range(1, n+1):
+        #if t == 1:
+        #   vpl = vpl + x (x < 0)
+        vpl = vpl + FCt/(1+i)**t
+        vpl_lista.append(vpl)
+    return vpl_lista
+
+#FCt = LCT - LCR  #LCT é o custo total do isolamento bom e LCR custo total com isolamento ruim/atual
 
 # VPLAE (Valor presente líquido anualizado equivalente) - dividir em partes
 def VPLAE(FCt, n, i):
@@ -21,8 +31,8 @@ def VPLAE(FCt, n, i):
     return vplae
 
 #PAYBACK
-def payback(FCt, n, i): # retorna o t necessesário para
-    vpl = 0 #que o investimento passe a gerar
+def payback(lci, FCt, n, i): # retorna o t necessesário para
+    vpl = lci #que o investimento passe a gerar
     for t in range(1, n+1):          #retorno do capital investido.
         vpl = vpl + FCt/(1+i)**t
         if vpl >= 0:
@@ -32,4 +42,4 @@ def payback(FCt, n, i): # retorna o t necessesário para
 #Qual valor de t para VPL=0
 
 # CRIAR LISTA (VIB) para cada material e espessura
-CRIAR 4 LISTAS - Fct, VPL, VPLAE, PAYBACK
+#CRIAR 4 LISTAS - Fct, VPL, VPLAE, PAYBACK

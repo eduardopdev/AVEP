@@ -10,10 +10,10 @@ di = 0.254
 de = 0.300
 
 #Temperatura do fluido em K.
-Ti = 4 + 273.15
+Ti = 6 + 273.15
 
 #Temperatura do ar ambiente em K.
-Ta = 32 + 273.15
+Ta = 29 + 273.15
 
 #Condutividade térmica do material da tubulaçãoem SI.
 lmd_tube = 60
@@ -31,10 +31,10 @@ z = 500
 eps = ctc.emissividade('Alumínio')
 
 #Vazão mássica de água em kg/s.
-m = 35
+m = 138
 
 #Coeficiente de convecção do escoamento interno à tubulação em SI.
-h_fld = wtr.hc(m, di, Ti, 0)
+h_fld = wtr.hc(m, di, Ti)
 
 #Calor específico em J/(kg.K) da água. Pode ser importado de wtr.py.
 c = wtr.cp(Ti)
@@ -46,10 +46,10 @@ Dt_max = 0
 R_rev = 1e-4
 
 #Umidade relativa.
-RH = 0.80
-
-(N, CEE, eta, COP, n, i, delta, tm) = (400, 0.12, 0.80, 4, 10, 0.15, 0.08, 0.02)
+RH = 0.78
+TF = 6.5 + 273.15
+(N, CEE, eta, COP, n, i, tm) = (400, 0.12, 0.80, 4, 10, 0.08, 0.01)
 
 if True:
-    result = iba.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev, RH, N, CEE, eta, COP, n, i, delta, tm)
+    result = iba.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev, RH, N, CEE, eta, COP, n, i, tm, TF)
     result.to_excel("resultado_a.xlsx", sheet_name='IsoBrás', index = False, startcol = 0, freeze_panes = (2,2))
