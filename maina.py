@@ -25,7 +25,7 @@ U = 3
 H = 0
 
 #comprimento da tubulação em m.
-z = 500
+z = 100
 
 #Emissividade da superfície. Pode ser importada de ctc.py.
 eps = ctc.emissividade('Alumínio')
@@ -48,8 +48,8 @@ R_rev = 1e-4
 #Umidade relativa.
 RH = 0.78
 TF = 6.5 + 273.15
-(N, CEE, eta, COP, n, i, tm) = (400, 0.12, 0.80, 4, 10, 0.08, 0.01)
+(N, CEE, eta, COP, n, i, tm) = (400, 0.12, 0.80, 4, 15, 0.12, 0.01)
 
 if True:
     result = iba.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev, RH, N, CEE, eta, COP, n, i, tm, TF)
-    result.to_excel("resultado_a.xlsx", sheet_name='IsoBrás', index = False, startcol = 0, freeze_panes = (2,2))
+    result.to_excel("resultado_a.xlsx", sheet_name='MERCK', index = False, startcol = 0, freeze_panes = (2,2))

@@ -40,5 +40,5 @@ espuma_custos[4] = 500
 
 #custo da mão de obra
 #custos em metro (por metro de tubulação)
-mao_de_obra_custos = 170 #esperar pegar o valor com email
+mao_de_obra_custos = 140 #esperar pegar o valor com email
 custo_manutencao = 2000

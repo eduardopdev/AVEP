@@ -55,7 +55,7 @@ R_rev = 1e-5
 #Taxa máxima admissível de transferência de calor em W. Se == 0, ignorada.
 Q_max = 0
 
-(N, F, eta, n, i, delta, tm) = (400, 3.5e-9, 0.80, 10, 0.15, 0.08, 0.02)
+(N, F, eta, n, i, delta, tm) = (400, 3.5e-9, 0.80, 20, 0.15, 0.08, 0.02)
 
 if True:
     result = ib.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_or_h, ts_max, Dt_max, R_rev, Q_max, N, F, eta, n, i, delta, tm)

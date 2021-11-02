@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import pandas as pd
 import numpy as np
@@ -19,24 +18,28 @@ import vpl_revisado
 # =============================================================================
 # Custos.
 # =============================================================================
-def get_greater_y(xlist, ylist, material):
+def get_greater_saving(espessuras, saving, material):
+    """
+    Retorna o índice da espessura associada
+    ao maior valor de saving para o materia
+    passado como parâmetro
+    """
     if material=="Aerogel":
-        for i in range(16):
-            if i == 0:
-                x = xlist[0]
-                max = ylist[0]
-            else:
-                if ylist[i] > max:
-                    x = i
-    if material=="Espuma":
-        for i in range(16,32):
-            if i == 16:
-                x = xlist[0]
-                max = ylist[0]
-            else:
-                if ylist[i] > max:
-                    x = i
-    return x
+        index_espessura = 0
+        max_saving = saving[0]
+        for index in range(1,16):
+            if saving[index] > max_saving:
+                    max_saving = saving[index]
+                    index_espessura = index
+
+    elif material=="Espuma":
+        index_espessura = 16
+        max_saving = saving[16]
+        for index in range(16,32):
+            if saving[index] > max_saving:
+                    max_saving = saving[index]
+                    index_espessura = index
+    return index_espessura
 
 def fesp_q(pltObj, LE, LQ):
     LQ_Aerogel = []
@@ -53,35 +56,19 @@ def fesp_q(pltObj, LE, LQ):
     plt.legend() #exibir a legenda
     plt.show()
 
-def fTe_q(pltObj, Te_aerogel, Te_espuma, q_aerogel, q_espuma):
-    pltObj.plot(Te_aerogel, q_aerogel, "b", label = "Aerogel")
-    pltObj.plot(Te_espuma, q_espuma, "r", label = "Espuma")
-    pltObj.title('Temperatura x Calor')
+def fTe_q(pltObj, Ts, q_aerogel, q_espuma):
+    pltObj.plot(Ts, q_aerogel, "b.-", label = "Aerogel")
+    pltObj.plot(Ts, q_espuma, "r.-", label = "Espuma")
+    pltObj.title('Temperatura (°C) x Calor')
     plt.xlabel('K')
     plt.ylabel('calor')
     plt.legend()
     plt.show()
 
-def fTe_VPL(pltObj, Te_aerogel, Te_espuma, VPL_aerogel, VPL_espuma):
-    pltObj.plot(Te_aerogel, VPL_aerogel, "b", label = "Aerogel")
-    pltObj.plot(Te_espuma, VPL_espuma, "r", label = "Espuma")
-    pltObj.title('Temperatura x VPL')
-    plt.xlabel('K')
-    plt.ylabel('VPL')
-    plt.legend()
-    plt.show()
-
-def fTe_q_atual(pltObj, Te, q):
-    pltObj.plot(Te, q, "b", label = "Atual")
-    pltObj.title('Temperatura x Calor')
-    plt.xlabel('K')
-    plt.ylabel('VPL')
-    plt.legend()
-    plt.show()
-
-def fTe_VPL_atual(pltObj, Te, VPL):
-    pltObj.plot(Te, VPL, "b", label = "Atual")
-    pltObj.title('Temperatura x VPL')
+def fTe_VPL(pltObj, Ts, VPL_aerogel, VPL_espuma):
+    pltObj.plot(Ts, VPL_aerogel, "b.-", label = "Aerogel")
+    pltObj.plot(Ts, VPL_espuma, "r.-", label = "Espuma")
+    pltObj.title('Temperatura (°C) x VPL')
     plt.xlabel('K')
     plt.ylabel('VPL')
     plt.legend()
@@ -118,35 +105,25 @@ def fesp_payback(pltObj, LE, payback):
     plt.show()
 
 def fn_vpl(pltObj, vpl_lista_aerogel, vpl_lista_espuma, n):
+    """
+    Plota um gráfico que o valor de vpl a cada ano
+    para aerogel e espuma levando em consideração
+    a espessura de cada material que gerou saving
+    em cada material.
+    """
     n_lista = list(range(n+1))
     pltObj.plot(n_lista, vpl_lista_aerogel,"b.-", label="Aerogel")
     pltObj.plot(n_lista, vpl_lista_espuma,"r.-", label="Espuma")
     pltObj.title('Tempo (anos) x VPL')
     pltObj.xlabel('tempo')
     pltObj.ylabel('VPL')
+    pltObj.ylim(-15000, 30000)
     plt.legend()
     plt.show()
 
 def fi_vpl(pltObj, vpl_aerogel, vpl_espuma, juros):
     pltObj.plot(juros, vpl_aerogel,"b", label="Aerogel")
     pltObj.plot(juros, vpl_espuma,"r", label="Espuma")
-    pltObj.title('Taxa de Juros x VPL')
-    pltObj.xlabel('Juros')
-    pltObj.ylabel('VPL')
-    plt.legend()
-    plt.show()
-
-def fn_vpl_atual(pltObj, vpl_lista_atual, n):
-    n_lista = list(range(n+1))
-    pltObj.plot(n_lista, vpl_lista_atual,"b", label="Material Atual")
-    pltObj.title('Tempo (anos) x VPL')
-    pltObj.xlabel('tempo')
-    pltObj.ylabel('VPL')
-    plt.legend()
-    plt.show()
-
-def fi_vpl_atual(pltObj, vpl_lista_atual, juros):
-    pltObj.plot(juros, vpl_lista_atual,"b", label="Material Atual")
     pltObj.title('Taxa de Juros x VPL')
     pltObj.xlabel('Juros')
     pltObj.ylabel('VPL')
@@ -298,16 +275,16 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     LFCI2 = []
     LFCI2 += [custos.aerogel_custos[esp] for esp in LE_Disp_Imp2]
     LFCI2 += [custos.espuma_custos[esp] for esp in LE_Disp_Imp2]
-    #LCI = [np.nan]
     
     LCI = []
     for ci in LFCI2:
-        teste = ci * 2 * np.pi * z * de/2 + custos.mao_de_obra_custos * z
-        LCI += [teste]
+        custo_de_investimento = ci * 2 * np.pi * z * de/2 + custos.mao_de_obra_custos * z
+        #exit()
+        LCI += [custo_de_investimento]
     #Custo de manutenção.
     LCM = [CM(CI, tm) for CI in LCI]
     #Custo total.
-    LCT = [x + y + z for (x,y,z) in zip(LCE, LCI, LCM)]
+    LCT = [x + y for (x,y) in zip(LCE, LCM)]
     
     #Isolamento Atual
     cp_media = (wtr.cp(TF) + wtr.cp(Ti))/2
@@ -319,19 +296,19 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     #Para cada espessura dos materiais trabalhados, essa
     #lista armazena o quanto é economizado em relação
     #ao custo total do isolamento atual
-    Dif_CTAtual_CTNovos = [CT_Atual - custo_LCT for custo_LCT in LCT] #Saving
+    Saving = [CT_Atual - custo_LCT for custo_LCT in LCT] #Saving
 
     #Viabilidade de Projeto
     Valor_Pres_Liq = [] #VPL
     for index in range(0,32):
-        Valor_Pres_Liq.append(-LCI[index] + vpl_revisado.VPL(Dif_CTAtual_CTNovos[index], n, i))
+        Valor_Pres_Liq.append(-LCI[index] + vpl_revisado.VPL(Saving[index], n, i))
 
     #VPLAE
     Valor_Pres_LiqAE = [vpl * ((i*((1+i)**n))/(((1+n)**n)-1)) for vpl in Valor_Pres_Liq]
 
     payback = [] #Payback
     for index in range(0,32):
-        payback.append(vpl_revisado.payback(-LCI[index], Dif_CTAtual_CTNovos[index], n, i))
+        payback.append(vpl_revisado.payback(-LCI[index], Saving[index], n, i))
     
     viabilidade_bool = [] #Viável?
     for index in range(0,32):
@@ -378,7 +355,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     Disp['Custo de Investimento \n [$/m]'] = LCI
     Disp['Custo de Manutenção \n [$/m]'] = LCM
     Disp['Custo Total \n [$/m]'] = LCT
-    Disp['Saving'] = Dif_CTAtual_CTNovos
+    Disp['Saving'] = Saving
     Disp['VPL'] = Valor_Pres_Liq
     Disp['VPLAE'] = Valor_Pres_LiqAE
     Disp['Payback'] = payback
@@ -418,90 +395,184 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     Disp.insert(loc = 0, column = 'Varáivel', value = LA)
 #########################################################################################################3
     fesp_VPL(plt, LE_Disp_Imp2, Valor_Pres_Liq)
-    print(Valor_Pres_Liq)
-    """fesp_q(plt, LE_Disp_Imp2, Lq)
+    fesp_q(plt, LE_Disp_Imp2, Lq)
     fesp_payback(plt, LE_Disp_Imp2, payback)
 
-    melhor_espessura_aerogel = get_greater_y(LE_Disp_Imp2, Valor_Pres_Liq, "Aerogel")
-    melhor_espessura_espuma = get_greater_y(LE_Disp_Imp2, Valor_Pres_Liq, "Espuma")
-    fct_aerogel = Dif_CTAtual_CTNovos[melhor_espessura_aerogel]
-    custo_inicial_aerogel = -LCI[melhor_espessura_aerogel]
-    fct_espuma = Dif_CTAtual_CTNovos[melhor_espessura_espuma]
-    custo_inicial_espuma = -LCI[melhor_espessura_espuma]
+    maior_saving_aerogel = get_greater_saving(LE_Disp_Imp2, Saving, "Aerogel")
+    maior_saving_espuma = get_greater_saving(LE_Disp_Imp2, Saving, "Espuma")
+    fct_aerogel = Saving[maior_saving_aerogel]
+    custo_inicial_aerogel = -LCI[maior_saving_aerogel]
+    fct_espuma = Saving[maior_saving_espuma]
+    custo_inicial_espuma = -LCI[maior_saving_espuma]
     vpl_lista_aerogel = vpl_revisado.VPL_lista(custo_inicial_aerogel, fct_aerogel, n, i)
     vpl_lista_espuma = vpl_revisado.VPL_lista(custo_inicial_espuma, fct_espuma, n, i)
-    vpl_lista_atual = vpl_revisado.VPL_lista(0, 0, n, i)
     fn_vpl(plt, vpl_lista_aerogel, vpl_lista_espuma, n)
-    fn_vpl_atual(plt, vpl_lista_atual, n)
     
+
+    fct_aerogel = Saving[5] 
+    custo_inicial_aerogel = -LCI[5]
+    fct_espuma = Saving[21]
+    custo_inicial_espuma = -LCI[21]
+    vpl_lista_aerogel = vpl_revisado.VPL_lista(custo_inicial_aerogel, fct_aerogel, n, i)
+    vpl_lista_espuma = vpl_revisado.VPL_lista(custo_inicial_espuma, fct_espuma, n, i)
+    fn_vpl(plt, vpl_lista_aerogel, vpl_lista_espuma, n)
+
+    fct_aerogel = Saving[maior_saving_aerogel]
+    fct_espuma = Saving[maior_saving_espuma]
     juros = []
     vpl_aerogel = []
     vpl_espuma = []
-    vpl_atual = []
     for x in np.linspace(4,15,1000):
         new_i = (x)/100
         juros.append(new_i)
-        vpl_aerogel.append(vpl_revisado.VPL(fct_aerogel, n, new_i))
-        vpl_espuma.append(vpl_revisado.VPL(fct_espuma, n, new_i))
-        vpl_atual.append(vpl_revisado.VPL(0, n, new_i))
+        vpl_aerogel.append(-LCI[maior_saving_aerogel] + vpl_revisado.VPL(fct_aerogel, n, new_i))
+        vpl_espuma.append(-LCI[maior_saving_espuma] + vpl_revisado.VPL(fct_espuma, n, new_i))
     fi_vpl(plt, vpl_aerogel, vpl_espuma, juros)
-    fi_vpl_atual(plt, vpl_atual, juros)
-    
+
+    fct_aerogel = Saving[5]
+    fct_espuma = Saving[21]
+    juros = []
     vpl_aerogel = []
     vpl_espuma = []
-    vpl_atual = []
-    temperaturas_aerogel = [] #variando de Te até Ta
-    temperaturas_espuma = [] #variando de Te até Ta
-    temperaturas_atual = []
-    temperatura_aerogel = Lte[melhor_espessura_aerogel]
-    temperatura_espuma = Lte[melhor_espessura_espuma]
-    for t in np.linspace(temperatura_aerogel*100, Ta*100 + 1, 1000):
-        temperaturas_aerogel.append(t/100)
+    for x in np.linspace(4,15,1000):
+        new_i = (x)/100
+        juros.append(new_i)
+        vpl_aerogel.append(-LCI[5] + vpl_revisado.VPL(fct_aerogel, n, new_i))
+        vpl_espuma.append(-LCI[21] + vpl_revisado.VPL(fct_espuma, n, new_i))
+    fi_vpl(plt, vpl_aerogel, vpl_espuma, juros)
+
+    # Gráficos de Temperatura por calor e VPL considerando a espessura do melhor saving
+    vpl_aerogel = []
+    vpl_espuma = []
+    temperaturas = []
+    temperatura_inicial = int(Lte[maior_saving_aerogel]*100)
+    Ta_ajustado = Ta - 273.15
+    for t in np.linspace(temperatura_inicial, Ta_ajustado + 1, 16):
+        temperaturas.append(t/100)
     q_aerogel = []
-    R_aerogel = 0
-    for t in temperaturas_aerogel:
-        R_aerogel = (rt.rt_conv_cili(di,h_fld)+\
-                rt.rt_cond_cili(di,de,lmd_tube)+\
-                rt.rt_cond_cili(Di,De,flmd)+\
-                R_rev+((((rt.rt_conv_cili(De,ctc.hc_m_ch(U,De,t,Ta))))+((rt.rt_crad_cili(De,ctc.hr(eps,t,Ta)))))))
-        q_aerogel.append((Ta - Ti) / R_aerogel)
-        lce_aerogel = CE(abs(q_aerogel[-1]), N, CEE, eta, COP)
-        lci_aerogel = LFCI2[melhor_espessura_aerogel] * 2 * np.pi * z * de/2 + custos.mao_de_obra_custos * z
-        lcm_aerogel = CM(lci_aerogel, tm)
-        lct_aerogel = lcm_aerogel + lci_aerogel + lce_aerogel
-        fct_aerogel = CT_Atual - lct_aerogel
-        vpl_aerogel.append(vpl_revisado.VPL(fct_aerogel, n, i))
+    R_aerogel = []
+    De_aerogel = Di + 2*LE_Disp_Imp2[maior_saving_aerogel]
+    for t in temperaturas:
+        R_aerogel = R_aerogel + [(rt.rt_conv_cili(di,h_fld,z)+ \
+                    rt.rt_cond_cili(di,de,lmd_tube,z)+ \
+                    rt.rt_cond_cili(Di,De_aerogel,flmd,z)+ \
+                    R_rev+ \
+                    ((((rt.rt_conv_cili(De_aerogel,ctc.hc_f_c(U,De_aerogel,t,Ta),z))**(-1))+\
+                            ((rt.rt_crad_cili(De_aerogel,ctc.hr(eps,t,Ta),z))**(-1)))**(-1)))]
 
-    for t in np.linspace(temperatura_espuma*100, Ta*100 + 1, 1000):
-        temperaturas_espuma.append(t/100)
+    LVT_aerogel = list(map(lambda x: Ti - (Ta - (Ta - Ti)*np.exp(-1/(m*c*x))),R_aerogel))
+    LTSK_aerogel = list(map(lambda x: Ti - x, LVT_aerogel))
+    LLMTD_aerogel = [((x - Ta) - (Ti - Ta))/(np.log((x - Ta)/(Ti - Ta))) for x in LTSK_aerogel]
+    ZTR_aerogel = zip(LLMTD_aerogel, R_aerogel)
+    q_aerogel = [x[0]/(x[1]) for x in ZTR_aerogel]
+    LCE_aerogel = [CE(abs(q), N, CEE, eta, COP) for q in q_aerogel]
+    LFCI2_aerogel = [custos.aerogel_custos[esp] for esp in LE_Disp_Imp2]
+    LCI_aerogel = []
+    for ci in LFCI2_aerogel:
+        custo_de_investimento = ci * 2 * np.pi * z * de/2 + custos.mao_de_obra_custos * z
+        LCI_aerogel += [custo_de_investimento]
+    LCM_aerogel = [CM(CI, tm) for CI in LCI_aerogel]
+    LCT_aerogel = [x + y for (x,y) in zip(LCE_aerogel, LCM_aerogel)]
+    Saving_aerogel = [CT_Atual - custo_LCT for custo_LCT in LCT_aerogel]
+    vpl_aerogel = []
+    for index in range(0,16):
+        vpl_aerogel.append(-LCI_aerogel[index] + vpl_revisado.VPL(Saving_aerogel[index], n, i))        
+
     q_espuma = []
-    R_espuma = 0
-    for t in temperaturas_espuma:
-        R_espuma = (rt.rt_conv_cili(di,h_fld)+\
-                rt.rt_cond_cili(di,de,lmd_tube)+\
-                rt.rt_cond_cili(Di,De,flmd)+\
-                R_rev+((((rt.rt_conv_cili(De,ctc.hc_m_ch(U,De,t,Ta))))+((rt.rt_crad_cili(De,ctc.hr(eps,t,Ta)))))))
-        q_espuma.append((Ta - Ti) / R_espuma)
-        lce_espuma = CE(abs(q_espuma[-1]), N, CEE, eta, COP)
-        lci_espuma = LFCI2[melhor_espessura_espuma] * 2 * np.pi * z * de/2 + custos.mao_de_obra_custos * z
-        lcm_espuma = CM(lci_espuma, tm)
-        lct_espuma = lcm_espuma + lci_espuma + lce_espuma
-        fct_espuma = CT_Atual - lct_espuma
-        vpl_espuma.append(vpl_revisado.VPL(fct_espuma, n, i))
-    fTe_q(plt, temperaturas_aerogel, temperaturas_espuma, q_aerogel, q_espuma)
-    fTe_VPL(plt, temperaturas_aerogel, temperaturas_espuma, vpl_aerogel, vpl_espuma)
+    R_espuma = []
+    De_espuma = Di + 2*LE_Disp_Imp2[maior_saving_espuma%16]
+    for t in temperaturas:
+        R_espuma = R_espuma + [(rt.rt_conv_cili(di,h_fld,z)+ \
+                    rt.rt_cond_cili(di,de,lmd_tube,z)+ \
+                    rt.rt_cond_cili(Di,De_espuma,flmd,z)+ \
+                    R_rev+ \
+                    ((((rt.rt_conv_cili(De_espuma,ctc.hc_f_c(U,De_espuma,t,Ta),z))**(-1))+\
+                            ((rt.rt_crad_cili(De_espuma,ctc.hr(eps,t,Ta),z))**(-1)))**(-1)))]
+    LVT_espuma = list(map(lambda x: Ti - (Ta - (Ta - Ti)*np.exp(-1/(m*c*x))),R_espuma))
+    LTSK_espuma = list(map(lambda x: Ti - x, LVT_espuma))
+    LLMTD_espuma = [((x - Ta) - (Ti - Ta))/(np.log((x - Ta)/(Ti - Ta))) for x in LTSK_espuma]
+    ZTR_espuma = zip(LLMTD_espuma, R_espuma)
+    q_espuma = [x[0]/(x[1]) for x in ZTR_espuma]
 
-    q_Atual = []
-    for t in np.linspace(TF*100, Ta*100 + 1, 1000):
-        temperaturas_atual.append(t/100)
-    for t in temperaturas_atual:
-        cp_media = (wtr.cp(t) + wtr.cp(Ti))/2
-        q_Atual.append(m * cp_media * (Ta - Ti))
-        CE_Atual = CE(abs(q_Atual[-1]), N, CEE, eta, COP)
-        CM_Atual = custos.custo_manutencao
-        CT_Atual = CM_Atual + CE_Atual
-        vpl_atual.append(vpl_revisado.VPL(CT_Atual, n, i))
-    fTe_q_atual(plt, temperaturas_atual, q_Atual)
-    fTe_VPL_atual(plt, temperaturas_atual, vpl_atual)"""
+    LCE_espuma = [CE(abs(q), N, CEE, eta, COP) for q in q_espuma]
+    LFCI2_espuma = [custos.espuma_custos[esp] for esp in LE_Disp_Imp2]
+    LCI_espuma = []
+    for ci in LFCI2_espuma:
+        custo_de_investimento = ci * 2 * np.pi * z * de/2 + custos.mao_de_obra_custos * z
+        LCI_espuma += [custo_de_investimento]
+    LCM_espuma = [CM(CI, tm) for CI in LCI_espuma]
+    LCT_espuma = [x + y for (x,y) in zip(LCE_espuma, LCM_espuma)]
+    Saving_espuma = [CT_Atual - custo_LCT for custo_LCT in LCT_espuma]
+    vpl_espuma = []
+    for index in range(0,16):
+        vpl_espuma.append(-LCI_espuma[index] + vpl_revisado.VPL(Saving_espuma[index], n, i))
+    
+    fTe_q(plt, temperaturas , q_aerogel, q_espuma)
+    fTe_VPL(plt, temperaturas , vpl_aerogel, vpl_espuma)
+
+    # Gráficos de Temperatura por calor e VPL considerando a espessura do isolamento atual
+    vpl_aerogel = []
+    vpl_espuma = []
+    temperaturas = []
+
+    for t in np.linspace(temperatura_inicial, Ta_ajustado + 1, 16):
+        temperaturas.append(t/100)
+    q_aerogel = []
+    R_aerogel = []
+    De_aerogel = Di + 2*LE_Disp_Imp2[5]
+    for t in temperaturas:
+        R_aerogel = R_aerogel + [(rt.rt_conv_cili(di,h_fld,z)+ \
+                    rt.rt_cond_cili(di,de,lmd_tube,z)+ \
+                    rt.rt_cond_cili(Di,De_aerogel,flmd,z)+ \
+                    R_rev+ \
+                    ((((rt.rt_conv_cili(De_aerogel,ctc.hc_f_c(U,De_aerogel,t,Ta),z))**(-1))+\
+                            ((rt.rt_crad_cili(De_aerogel,ctc.hr(eps,t,Ta),z))**(-1)))**(-1)))]
+        LVT_aerogel = list(map(lambda x: Ti - (Ta - (Ta - Ti)*np.exp(-1/(m*c*x))),R_aerogel))
+        LTSK_aerogel = list(map(lambda x: Ti - x, LVT))
+        LLMTD_aerogel = [((x - Ta) - (Ti - Ta))/(np.log((x - Ta)/(Ti - Ta))) for x in LTSK_aerogel]
+        ZTR_aerogel = zip(LLMTD_aerogel, R_aerogel)
+        q_aerogel = [x[0]/(x[1]) for x in ZTR_aerogel]
+        LCE_aerogel = [CE(abs(q), N, CEE, eta, COP) for q in q_aerogel]
+        LFCI2_aerogel = [custos.aerogel_custos[esp] for esp in LE_Disp_Imp2]
+        LCI_aerogel = []
+        for ci in LFCI2_aerogel:
+            custo_de_investimento = ci * 2 * np.pi * z * de/2 + custos.mao_de_obra_custos * z
+            LCI_aerogel += [custo_de_investimento]
+        LCM_aerogel = [CM(CI, tm) for CI in LCI_aerogel]
+        LCT_aerogel = [x + y for (x,y) in zip(LCE_aerogel, LCM_aerogel)]
+        Saving_aerogel = [CT_Atual - custo_LCT for custo_LCT in LCT_aerogel]
+        vpl_aerogel = []
+        for index in range(0,16):
+            vpl_aerogel.append(-LCI_aerogel[index] + vpl_revisado.VPL(Saving[index], n, i))        
+
+    q_espuma = []
+    R_espuma = []
+    De_espuma = Di + 2*LE_Disp_Imp2[5]
+    for t in temperaturas:
+        R_espuma = R_espuma + [(rt.rt_conv_cili(di,h_fld,z)+ \
+                    rt.rt_cond_cili(di,de,lmd_tube,z)+ \
+                    rt.rt_cond_cili(Di,De_espuma,flmd,z)+ \
+                    R_rev+ \
+                    ((((rt.rt_conv_cili(De_espuma,ctc.hc_f_c(U,De_espuma,t,Ta),z))**(-1))+\
+                            ((rt.rt_crad_cili(De_espuma,ctc.hr(eps,t,Ta),z))**(-1)))**(-1)))]
+        LVT_espuma = list(map(lambda x: Ti - (Ta - (Ta - Ti)*np.exp(-1/(m*c*x))),R_espuma))
+        LTSK_espuma = list(map(lambda x: Ti - x, LVT))
+        LLMTD_espuma = [((x - Ta) - (Ti - Ta))/(np.log((x - Ta)/(Ti - Ta))) for x in LTSK_espuma]
+        ZTR_espuma = zip(LLMTD_espuma, R_espuma)
+        q_espuma = [x[0]/(x[1]) for x in ZTR_espuma]
+        LCE_espuma = [CE(abs(q), N, CEE, eta, COP) for q in q_espuma]
+        LFCI2_espuma = [custos.espuma_custos[esp] for esp in LE_Disp_Imp2]
+        LCI_espuma = []
+        for ci in LFCI2_espuma:
+            custo_de_investimento = ci * 2 * np.pi * z * de/2 + custos.mao_de_obra_custos * z
+            LCI_espuma += [custo_de_investimento]
+        LCM_espuma = [CM(CI, tm) for CI in LCI_espuma]
+        LCT_espuma = [x + y for (x,y) in zip(LCE_espuma, LCM_espuma)]
+        Saving_espuma = [CT_Atual - custo_LCT for custo_LCT in LCT_espuma]
+        vpl_espuma = []
+        for index in range(0,16):
+            vpl_espuma.append(-LCI_espuma[index] + vpl_revisado.VPL(Saving[index], n, i))
+    fTe_q(plt, temperaturas , q_aerogel, q_espuma)
+    fTe_VPL(plt, temperaturas , vpl_aerogel, vpl_espuma)
     
     return Disp
