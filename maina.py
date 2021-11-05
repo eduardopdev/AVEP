@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import iba
+import iba_teste
 import ctc
 import wtr
 
 #Diâmetro interno da tubulação em m.
-di = 0.254
+di = 0.2794
 
 #Diâmetro externo da tubulação em m.
 de = 0.300
@@ -13,13 +14,13 @@ de = 0.300
 Ti = 6 + 273.15
 
 #Temperatura do ar ambiente em K.
-Ta = 29 + 273.15
+Ta = 26.7 + 273.15
 
-#Condutividade térmica do material da tubulaçãoem SI.
-lmd_tube = 60
+#Condutividade térmica do material da tubulação em SI.
+lmd_tube = 52
 
 #Velocidade do vento em m/s. Caso convecção natural, U = 0.
-U = 3
+U = 1.6
 
 #Altura da tubulação em m, caso vertical.
 H = 0
@@ -46,9 +47,9 @@ Dt_max = 0
 R_rev = 1e-4
 
 #Umidade relativa.
-RH = 0.78
+RH = 0.74
 TF = 6.5 + 273.15
-(N, CEE, eta, COP, n, i, tm) = (400, 0.12, 0.80, 4, 15, 0.12, 0.01)
+(N, CEE, eta, COP, n, i, tm) = (2190, 0.7, 0.91, 5.372, 20, 0.08, 0.02)
 
 if True:
     result = iba.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev, RH, N, CEE, eta, COP, n, i, tm, TF)
