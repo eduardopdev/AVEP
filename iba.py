@@ -42,6 +42,14 @@ def get_greater_saving(espessuras, saving, material):
     return index_espessura
 
 def fesp_q(pltObj, LE, LQ):
+    """
+    Gera um gráfico de espessura por Q
+    A função passa pela lista de valores de
+    Q e a separa em duas listas
+    LQ_Aerogel e LQ_Espuma.
+    A lista LE passada como parâmetro será usada
+    como lista dos valores do eixo y
+    """
     LQ_Aerogel = []
     LQ_Espuma = []
     for i in range(16):
@@ -57,6 +65,23 @@ def fesp_q(pltObj, LE, LQ):
     pltObj.show()
 
 def fTe_q(pltObj, Ts, q, eixo_x):
+    """
+    Argumentos da função:
+    Ts : lista de temperaturas
+    q : lista de valores de calor
+    eixo_x : nome do material cujas temperaturas
+    ficaram no eixo x
+    Obs: As temperaturas estão em °C
+
+    Processo: A função plota um gráfico
+    de linha de temperatura por calor,
+    no eixo x estão os valores da lista
+    Ts e no y os valores da lista q.
+
+    a linha pltObj.ticklabel_format(useOffset=False, style='plain')
+    elimina o uso de notação científica e a substituição dos
+    valores reais por intervalos.
+    """
     pltObj.plot(Ts, q, "b.-", label = eixo_x)
     pltObj.title('Temperatura (°C) x Calor')
     pltObj.xlabel('°C')
@@ -66,6 +91,20 @@ def fTe_q(pltObj, Ts, q, eixo_x):
     pltObj.show()
 
 def fTe_VPL(pltObj, Ts, VPL, eixo_x):
+    """
+    Cria um gráfico de Temperatura por VPL.
+
+    Parâmetros da função:
+    pltObj - Objeto pyplot (responsável por gerar os gráficos)
+    Ts - lista de temperaturas
+    VPL - lista de valores de VPL
+    eixo_x - nome do material cujas temperaturas estão no
+    eixo x
+
+    a linha pltObj.ticklabel_format(useOffset=False, style='plain')
+    elimina o uso de notação científica e a substituição dos
+    valores reais por intervalos.
+    """
     pltObj.plot(Ts, VPL, "b.-", label = eixo_x)
     pltObj.title('Temperatura (°C) x VPL')
     pltObj.xlabel('°C')
@@ -75,6 +114,23 @@ def fTe_VPL(pltObj, Ts, VPL, eixo_x):
     pltObj.show()
 
 def fesp_VPL(pltObj, LE, VPL):
+    """
+    Cria um gráfico de espessura por VPL para Aerogel
+    e Espuma
+
+    Parâmetros da função:
+    pltObj - Objeto pyplot responsável por desenhar
+    os gráficos
+
+    LE - Lista de espessuras (em polegadas) com
+    valores para Aerogel (primeiros 16 valores) e
+    Espuma (os últimos 16)
+
+    A função separa os valores de temperaturas em
+    duas listas, uma para cada material, e faz
+    um gráfico de linha para cada uma delas com os valores
+    de VPL no eixo y e os valores de espessura no eixo x.
+    """
     VPL_Aerogel = []
     VPL_Espuma = []
     for i in range(16):
@@ -90,6 +146,27 @@ def fesp_VPL(pltObj, LE, VPL):
     pltObj.show()
 
 def fesp_Saving(pltObj, LE, Saving):
+    """
+    Cria um gráfico de espessura por Saving
+
+    Parâmetros da função:
+    pltObj - Objeto pyplot responsável por
+    desenhar as funções.
+
+    LE - Listas de espessuras (de 0.25 até 4 pol)
+
+    Saving - Lista de valores de saving para Aerogel
+    e Espuma.
+
+    A lista de Saving é dividida em duas partes
+    (as primeiras 16 para Aerogel e as últimas
+    16 para Espuma).
+
+    Para cada lista de Saving fazemos um plot
+    com os valores da LE no eixo x e os
+    valores da lista de Saving
+    correspondente aos valores do eixo y
+    """
     Saving_Aerogel = []
     Saving_Espuma = []
     for i in range(16):
@@ -105,6 +182,23 @@ def fesp_Saving(pltObj, LE, Saving):
     pltObj.show()
 
 def fesp_payback(pltObj, LE, payback):
+    """
+    Gera um gráfico de espessuras pelo mínimo
+    de tempo para alcançar o payback em anos
+
+    Parâmetros da função:
+    pltObj - objeto que desenha os gráficos
+
+    LE - Lista de espessuras
+    payback - Lista de tempo em anos
+    para alcançar o payback
+
+    A lista de payback é dividida é dividia
+    em duas (valores para Aerogel e Espuma)
+    e cada uma das listas é usada para plotar
+    um gráfico. Os valores do eixo x
+    são os valores da lista de espessuras.
+    """
     payback_Aerogel = []
     payback_Espuma = []
     for i in range(16):
@@ -125,6 +219,17 @@ def fn_vpl(pltObj, vpl_lista_aerogel, vpl_lista_espuma, n):
     para aerogel e espuma levando em consideração
     a espessura de cada material que gerou saving
     em cada material.
+
+    Parâmetros da função:
+    pltObj - objeto que desenha os gráficos.
+    vpl_lista_aerogel - lista com os valores
+    de vpl por ano para aerogel.
+    vpl_lista_espuma - lista de valores
+    de vpl por ano para espuma.
+    n - período em anos definido no código principal
+
+    a função ylim limita os valores do eixo y. Aqui
+    o intervalo foi definido manualmente.
     """
     n_lista = list(range(n+1))
     pltObj.plot(n_lista, vpl_lista_aerogel,"b.-", label="Aerogel")
@@ -137,6 +242,20 @@ def fn_vpl(pltObj, vpl_lista_aerogel, vpl_lista_espuma, n):
     pltObj.show()
 
 def fi_vpl(pltObj, vpl_aerogel, vpl_espuma, juros):
+    """
+    Gera um gráfico de taxa de juros por vpl.
+    Esse gráfico mostra o valor de vpl para o
+    período de anos estipulado em função
+    da taxa de juros.
+
+    Parâmetros da função
+    pltObj - objeto responsável por desenhar os
+    gráficos.
+    vpl_aerogel - lista com valores de vpl do aerogel
+    em n anos para a taxa de juros correspondente
+    vpl_espuma - lista com valores de vpl da espuma
+    em n anos para a taxa de juros correspondente
+    """
     pltObj.plot(juros, vpl_aerogel,"b", label="Aerogel")
     pltObj.plot(juros, vpl_espuma,"r", label="Espuma")
     pltObj.title('Taxa de Juros x VPL')
@@ -162,7 +281,33 @@ def CM(CI, tm):#, n, i):
 # =============================================================================
 
 def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev, RH, N, CEE, eta, COP, n, i, tm, TF):
+    """
+    Essa é a função principal do código. Ela gera a tabela de dados e os Gráficos
+    que refletem a tabela.
 
+    No fim do código da função de Sessão de Gráficos. Nela
+    os gráficos são gerados na seguinte ordem:
+    * espessura por VPL - usa as listas LE_Disp_Imp2 e Valor_Pres_Liq
+    * espessura por Saving - usa as listas LE_Disp_Imp2 e Saving
+    * espessura por Q - usa as listas LE_Disp_Imp2 e Lq
+    * espessura por payback - usa a lista LE_Disp_Imp2 e payback
+    * anos por vpl - Usa listas de vpl para aerogel e espuma. Cada
+    posição dessas listas correspondem ao valor de VPL para
+    uma quantidade x de anos. Os valores de melhor savings para
+    aerogel e espuma são dados pela função get_greater_saving()
+    * Depois a função gera o gráfico de anos por vpl considerando
+    a espessura do isolamento atual.
+    * em seguida são gerados também os gráficos de taxa de juros
+    por vpl considerando as espessuras do melhor saving para
+    aerogel e espuma e depois a espessura do isolamento atual
+    para os dois materiais usando a função fi_vpl()
+    *Os últimos 8 gráficos são gráficos de Temperatura por Q e
+    Temperatura por VPL. NEsses casos os 4 primeiros levam em
+    consideração a espessura do melhor saving e os 4 últimos
+    levam em consideração a espessura do isolamento atual.
+    Para os gráficos de temperatura, as informações do aerogel
+    e espuma foram dividas em gráficos individuais.
+    """
     Di = de #Diamentro interno do isolante = diâmetro externo da tubulação.
 
     #Lista de espessuras consideradas.
@@ -273,7 +418,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
 
     #Lista de q através de LMTD e R.
     LVT = list(map(lambda x: Ti - (Ta - (Ta - Ti)*np.exp(-1/(m*c*x))),LR))
-    
+
     LTSK = list(map(lambda x: Ti - x, LVT))
     LLMTD = [((x - Ta) - (Ti - Ta))/(np.log((x - Ta)/(Ti - Ta))) for x in LTSK]
     ZTR = zip(LLMTD, LR)
@@ -283,7 +428,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     #Custo de energia perdida atualizada.
     LCE = [CE(abs(q), N, CEE, eta, COP) for q in Lq]
     #Custo de investimento.
-    
+
     #O investimento é o custo do material + custo mão de mao_de_obra
     #A lista LFCI2 vai pegar os dados do módulo (biblioteca) custos
     # custo_do_material * área lateral da tubulação + custo da mão de obra * comprimento da tubulação
@@ -297,7 +442,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
         LCI += [custo_de_investimento]
     #Custo de manutenção.
     LCM = [CM(CI, tm) for CI in LCI]
-    
+
     #Custo total.
     LCT = [x + y for (x,y) in zip(LCE, LCM)]
     #Isolamento Atual
@@ -306,7 +451,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     CE_Atual = CE(abs(q_Atual), N, CEE, eta, COP)
     CM_Atual = custos.custo_manutencao
     CT_Atual = CM_Atual + CE_Atual
-    
+
     #Para cada espessura dos materiais trabalhados, essa
     #lista armazena o quanto é economizado em relação
     #ao custo total do isolamento atual
@@ -322,7 +467,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     payback = [] #Payback
     for index in range(0,32):
         payback.append(vpl_revisado.payback(-LCI[index], Saving[index], n, i))
-    
+
     viabilidade_bool = [] #Viável?
     for index in range(0,32):
         if Valor_Pres_Liq[index] > 0 and Valor_Pres_LiqAE[index] > 0:
@@ -349,7 +494,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
                 del LCMVA[i]
                 del LCT[i]
 
-   
+
     #Organização dos dados em um DataFrame.
     Disp = pd.DataFrame({'Material' : LNM,
                          'Espessura \n [mm]' : LE_Disp_DF,
@@ -372,15 +517,15 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     Disp['VPL'] = Valor_Pres_Liq
     Disp['VPLAE'] = Valor_Pres_LiqAE
     Disp['Payback'] = payback
-    Disp['Viável?'] = viabilidade_bool 
+    Disp['Viável?'] = viabilidade_bool
     #Disp = Disp.sort_values(by=['Custo Total \n [$/m]'])
     #Disp = Disp.iloc[[0]].append(Disp.iloc[1:].sort_values(by=['VPL']))
 
     #Isolamento atual (DataFrame)
     Isolamento_Atual = {'Material' : 'Isolamento Atual',
                          'Espessura \n [mm]' : 38.1,
-                         'Espessura \n [pol]' : 1.5, 
-                         'Diâmetro \n Externo [mm]' : 300, 
+                         'Espessura \n [pol]' : 1.5,
+                         'Diâmetro \n Externo [mm]' : 300,
                          'Temperatura na \n Face Externa [°C]' : np.NaN,
                          'Resistência Térmica [°C/W]': (Ta-Ti) / q_Atual}
     Isolamento_Atual['Variação de Temperatura \n do Fluido [°C]'] = TF-Ti
@@ -393,7 +538,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     Isolamento_Atual['Saving'] = 0
     Isolamento_Atual['VPL'] = 0
     Isolamento_Atual['VPLAE'] = 0
-    Isolamento_Atual['Payback'] = 0 
+    Isolamento_Atual['Payback'] = 0
     Isolamento_Atual['Viável?'] = np.NaN
     Isolamento_Atual_Lista = [Isolamento_Atual]
     Disp = pd.concat([pd.DataFrame(Isolamento_Atual_Lista), Disp], ignore_index=True)
@@ -405,7 +550,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
         LB.append(np.nan)
     Disp.insert(loc = 0, column = 'Input', value = LB)
     Disp.insert(loc = 0, column = 'Varáivel', value = LA)
-#########################################################################################################3
+    ############################################################################ Sessão dos Gráficos ############################################################################
     fesp_VPL(plt, LE_Disp_Imp2, Valor_Pres_Liq)
     fesp_Saving(plt, LE_Disp_Imp2, Saving)
     fesp_q(plt, LE_Disp_Imp2, Lq)
@@ -420,9 +565,9 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     vpl_lista_aerogel = vpl_revisado.VPL_lista(custo_inicial_aerogel, fct_aerogel, n, i)
     vpl_lista_espuma = vpl_revisado.VPL_lista(custo_inicial_espuma, fct_espuma, n, i)
     fn_vpl(plt, vpl_lista_aerogel, vpl_lista_espuma, n)
-    
 
-    fct_aerogel = Saving[5] 
+
+    fct_aerogel = Saving[5]
     custo_inicial_aerogel = -LCI[5]
     fct_espuma = Saving[21]
     custo_inicial_espuma = -LCI[21]
@@ -489,7 +634,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     Saving_aerogel = [CT_Atual - custo_LCT for custo_LCT in LCT_aerogel]
     vpl_aerogel = []
     for index in range(0,16):
-        vpl_aerogel.append(round(-LCI_aerogel[index] + vpl_revisado.VPL(Saving_aerogel[index], n, i),3))        
+        vpl_aerogel.append(round(-LCI_aerogel[index] + vpl_revisado.VPL(Saving_aerogel[index], n, i),3))
 
     q_espuma = []
     R_espuma = []
@@ -503,14 +648,14 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
                             ((rt.rt_crad_cili(De_espuma,ctc.hr(eps,t,Ta),z))**(-1)))**(-1)))]
     LVT_espuma = list(map(lambda x: Ti - (Ta - (Ta - Ti)*np.exp(-1/(m*c*x))),R_espuma))
     LTSK_espuma = list(map(lambda x: Ti - x, LVT_espuma))
-    LLMTD_espuma = [((x - Ta) - (Ti - Ta))/(np.log((x - Ta)/(Ti - Ta))) for x in LTSK_espuma] 
-    ZTR_espuma = zip(LLMTD_espuma, R_espuma)       
+    LLMTD_espuma = [((x - Ta) - (Ti - Ta))/(np.log((x - Ta)/(Ti - Ta))) for x in LTSK_espuma]
+    ZTR_espuma = zip(LLMTD_espuma, R_espuma)
     q_espuma = [x[0]/(x[1]) for x in ZTR_espuma]
     LCE_espuma = [CE(abs(q), N, CEE, eta, COP) for q in q_espuma]
     LFCI2_espuma = [custos.espuma_custos[0.50]] * len(temperaturas)
     LCI_espuma = []
     for ci in LFCI2_espuma:
-        custo_de_investimento = ci * 2 * np.pi * z * de/2 + custos.mao_de_obra_custos * z 
+        custo_de_investimento = ci * 2 * np.pi * z * de/2 + custos.mao_de_obra_custos * z
         LCI_espuma += [custo_de_investimento]
     LCM_espuma = [CM(CI, tm) for CI in LCI_espuma]
     LCT_espuma = [x + y for (x,y) in zip(LCE_espuma, LCM_espuma)]
@@ -552,7 +697,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     Saving_aerogel = [CT_Atual - custo_LCT for custo_LCT in LCT_aerogel]
     vpl_aerogel = []
     for index in range(0,16):
-        vpl_aerogel.append(round(-LCI_aerogel[index] + vpl_revisado.VPL(Saving_aerogel[index], n, i),2))        
+        vpl_aerogel.append(round(-LCI_aerogel[index] + vpl_revisado.VPL(Saving_aerogel[index], n, i),2))
 
     q_espuma = []
     R_espuma = []
@@ -585,5 +730,5 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     fTe_q(plt, temperaturas_celcius , q_espuma, "Espuma")
     fTe_VPL(plt, temperaturas_celcius , vpl_aerogel, "Aerogel")
     fTe_VPL(plt, temperaturas_celcius , vpl_espuma, "Espuma")
-    
+
     return Disp
